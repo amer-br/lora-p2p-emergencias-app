@@ -1,0 +1,239 @@
+{
+  "info": {
+    "name": "Simulador de radio LoRa",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Estado",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base}}/estado",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "estado"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Tramas enviadas por la app",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base}}/enviadas",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "enviadas"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Borrar registro de enviadas",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{base}}/enviadas",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "enviadas"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Recibir alerta de incendio",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/alerta",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "alerta"
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"categoria\": \"incendio\",\n  \"texto\": \"Humo en edificio C\",\n  \"lat\": 22.7713,\n  \"lon\": -102.6431\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Recibir alerta médica",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/alerta",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "alerta"
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"categoria\": \"medica\",\n  \"texto\": \"Persona desmayada\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Recibir SOS",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/alerta",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "alerta"
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"categoria\": \"sos\",\n  \"rssi\": -110,\n  \"snr\": -8.5\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Recibir alerta duplicada (mismo msgId)",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/alerta",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "alerta"
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"categoria\": \"estructural\",\n  \"texto\": \"Grieta en muro\",\n  \"msgId\": \"0x00C0FFEE\",\n  \"senderId\": \"0x12345678\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Recibir Estoy a salvo",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/safety-check",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "safety-check"
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"estado\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Recibir trama con CRC inválido",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{base}}/trama",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "trama"
+          ]
+        },
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"hex\": \"0000000100000002041100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

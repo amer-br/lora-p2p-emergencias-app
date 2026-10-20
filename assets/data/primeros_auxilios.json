@@ -1,0 +1,110 @@
+[
+  {
+    "id": "rcp",
+    "titulo": "RCP (reanimación cardiopulmonar)",
+    "categoria": "medica",
+    "icono": "rcp",
+    "advertencias": "Si la persona no responde y no respira con normalidad, pide ayuda de inmediato y que alguien traiga un DEA.",
+    "pasos": [
+      "Verifica que la zona sea segura para ti y para la persona.",
+      "Toca sus hombros y pregunta en voz alta: «¿Me escucha?». Si no responde, pide ayuda y un DEA.",
+      "Observa si respira con normalidad durante no más de 10 segundos.",
+      "Si no respira o solo boquea, coloca el talón de una mano en el centro del pecho y la otra mano encima.",
+      "Comprime fuerte y rápido: 5 a 6 cm de profundidad, 100 a 120 compresiones por minuto, dejando que el pecho regrese.",
+      "Si sabes dar respiraciones, alterna 30 compresiones y 2 respiraciones; si no, continúa solo con compresiones.",
+      "En cuanto llegue el DEA, enciéndelo y sigue sus instrucciones de voz.",
+      "No te detengas hasta que la persona respire, llegue ayuda profesional o ya no puedas continuar."
+    ]
+  },
+  {
+    "id": "atragantamiento",
+    "titulo": "Atragantamiento",
+    "categoria": "medica",
+    "icono": "atragantamiento",
+    "advertencias": "Si la persona puede toser con fuerza, anímala a seguir tosiendo y no le des golpes.",
+    "pasos": [
+      "Pregunta: «¿Te estás atragantando?». Si no puede hablar, toser ni respirar, actúa de inmediato.",
+      "Colócate detrás de ella e inclínala ligeramente hacia adelante.",
+      "Da hasta 5 golpes firmes entre los omóplatos con el talón de la mano.",
+      "Si no se libera, rodea su cintura, coloca un puño arriba del ombligo y cúbrelo con la otra mano.",
+      "Da hasta 5 compresiones abdominales rápidas hacia adentro y hacia arriba.",
+      "Alterna 5 golpes y 5 compresiones hasta que expulse el objeto o pierda el conocimiento.",
+      "Si pierde el conocimiento, recuéstala en el suelo, pide ayuda e inicia RCP."
+    ]
+  },
+  {
+    "id": "hemorragias",
+    "titulo": "Hemorragias",
+    "categoria": "medica",
+    "icono": "hemorragias",
+    "advertencias": "Protégete las manos (guantes o una bolsa de plástico) antes de tocar sangre.",
+    "pasos": [
+      "Recuesta a la persona y localiza el punto de sangrado.",
+      "Presiona directamente sobre la herida con un paño limpio o una gasa.",
+      "Mantén la presión firme y constante al menos 10 minutos sin levantar el paño.",
+      "Si el paño se empapa, coloca otro encima; no retires el primero.",
+      "Si el sangrado de un brazo o pierna no se detiene y sabes usar un torniquete, colócalo 5 a 7 cm arriba de la herida y anota la hora.",
+      "Abriga a la persona y vigila si se pone pálida, fría o confundida (signos de choque)."
+    ]
+  },
+  {
+    "id": "quemaduras",
+    "titulo": "Quemaduras",
+    "categoria": "medica",
+    "icono": "quemaduras",
+    "advertencias": "No apliques hielo, pasta de dientes, aceite ni remedios caseros. No revientes las ampollas.",
+    "pasos": [
+      "Aleja a la persona de la fuente de calor. Si su ropa arde: que se detenga, se tire al suelo y ruede.",
+      "Enfría la quemadura con agua corriente a temperatura ambiente durante 20 minutos.",
+      "Retira anillos, relojes y ropa cercana antes de que se inflame, salvo lo que esté pegado a la piel.",
+      "Cubre la quemadura sin apretar con plástico limpio o un paño limpio que no suelte pelusa.",
+      "Busca atención médica si es extensa, profunda o está en cara, manos, pies, genitales o articulaciones."
+    ]
+  },
+  {
+    "id": "fracturas",
+    "titulo": "Fracturas",
+    "categoria": "medica",
+    "icono": "fracturas",
+    "advertencias": "No intentes enderezar el hueso. No muevas a la persona si sospechas lesión de cuello o espalda.",
+    "pasos": [
+      "Pide a la persona que no mueva la zona lesionada.",
+      "Si hay una herida abierta, cúbrela con un paño limpio sin presionar el hueso.",
+      "Inmoviliza la zona en la posición en que la encontraste, con tablillas, revistas o ropa enrollada.",
+      "Incluye en la inmovilización la articulación de arriba y la de abajo de la lesión.",
+      "Aplica frío envuelto en tela durante 15 a 20 minutos para reducir la hinchazón.",
+      "Revisa que los dedos conserven color, calor y sensibilidad; si no, afloja la sujeción."
+    ]
+  },
+  {
+    "id": "perdida_conciencia",
+    "titulo": "Pérdida de conciencia",
+    "categoria": "medica",
+    "icono": "perdida_conciencia",
+    "advertencias": "Si no respira con normalidad, inicia RCP de inmediato.",
+    "pasos": [
+      "Verifica que la zona sea segura.",
+      "Llama a la persona en voz alta y toca sus hombros.",
+      "Comprueba si respira con normalidad durante no más de 10 segundos.",
+      "Si respira, colócala de lado (posición lateral de seguridad) con la cabeza ligeramente hacia atrás.",
+      "Afloja la ropa ajustada y abrígala.",
+      "No le des nada de comer ni de beber.",
+      "Vigila su respiración continuamente hasta que llegue ayuda."
+    ]
+  },
+  {
+    "id": "choque",
+    "titulo": "Choque",
+    "categoria": "medica",
+    "icono": "choque",
+    "advertencias": "No le des de comer ni de beber aunque tenga sed.",
+    "pasos": [
+      "Reconoce los signos: piel pálida, fría y sudorosa; pulso y respiración rápidos; confusión.",
+      "Recuesta a la persona boca arriba.",
+      "Si no hay lesión en piernas, cadera o columna, eleva sus piernas unos 30 cm.",
+      "Controla cualquier sangrado visible (ver Hemorragias).",
+      "Abrígala para conservar el calor corporal.",
+      "Tranquilízala y vigila su respiración hasta que llegue ayuda."
+    ]
+  }
+]

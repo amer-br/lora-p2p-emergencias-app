@@ -54,6 +54,7 @@ class Dependencias {
     required this.senderId,
     required this.prefs,
     required this.incidentes,
+    required this.acuses,
     required this.safetyChecks,
     required this.recursos,
     required this.protocolos,
@@ -67,6 +68,7 @@ class Dependencias {
   final int senderId;
   final SharedPreferences prefs;
   final IncidenteRepository incidentes;
+  final AcuseRepository acuses;
   final SafetyCheckRepository safetyChecks;
   final RecursoRepository recursos;
   final ProtocoloRepository protocolos;
@@ -84,6 +86,7 @@ class Dependencias {
 
     final almacen = await abrirAlmacen();
     final incidentes = almacen.incidentes;
+    final acuses = almacen.acuses;
     final safetyChecks = almacen.safetyChecks;
     final recursos = almacen.recursos;
     var errorRecursos = false;
@@ -100,6 +103,7 @@ class Dependencias {
       senderId: senderId,
       prefs: prefs,
       incidentes: incidentes,
+      acuses: acuses,
       safetyChecks: safetyChecks,
       recursos: recursos,
       protocolos: ProtocoloRepository(),
@@ -108,6 +112,7 @@ class Dependencias {
       envio: EnvioService(
         senderId: senderId,
         incidentes: incidentes,
+        acuses: acuses,
         safetyChecks: safetyChecks,
         modem: modem,
         ubicacion: ubicacion,
@@ -115,6 +120,7 @@ class Dependencias {
       procesador: ProcesadorEntrante(
         modem: modem,
         incidentes: incidentes,
+        acuses: acuses,
         safetyChecks: safetyChecks,
       ),
       errorRecursos: errorRecursos,

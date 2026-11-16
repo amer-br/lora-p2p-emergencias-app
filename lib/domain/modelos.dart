@@ -6,7 +6,8 @@ enum Origen { propio, recibido }
 /// Estado de envío; solo aplica a registros propios.
 enum EstadoEnvio { pendiente, enviado, error }
 
-/// Estado consolidado de atención de un incidente (SRS 3.2).
+/// Estado consolidado de atención de un incidente (SRS 3.2). Se calcula con
+/// `consolidarAtencion` (domain/atencion.dart) a partir de los acuses.
 enum EstadoAtencion { emitido, enAsistencia, resuelto }
 
 /// Estado transmitido en una trama Safety Check.
@@ -62,22 +63,18 @@ class Incidente {
   bool get tieneUbicacion => lat != null && lon != null;
   Prioridad get prioridad => categoria?.prioridad ?? Prioridad.verde;
 
-  /// En este MVP no se procesan acuses (CU-08 a CU-11 quedan fuera), así que
-  /// todo incidente permanece en estado Emitido.
-  EstadoAtencion get estadoAtencion => EstadoAtencion.emitido;
-
   Incidente copyWith({EstadoEnvio? estadoEnvio}) => Incidente(
-        msgId: msgId,
-        senderId: senderId,
-        tipo: tipo,
-        lat: lat,
-        lon: lon,
-        texto: texto,
-        horaEmisor: horaEmisor,
-        horaRecepcionLocal: horaRecepcionLocal,
-        origen: origen,
-        estadoEnvio: estadoEnvio ?? this.estadoEnvio,
-      );
+    msgId: msgId,
+    senderId: senderId,
+    tipo: tipo,
+    lat: lat,
+    lon: lon,
+    texto: texto,
+    horaEmisor: horaEmisor,
+    horaRecepcionLocal: horaRecepcionLocal,
+    origen: origen,
+    estadoEnvio: estadoEnvio ?? this.estadoEnvio,
+  );
 }
 
 class ReporteSafetyCheck {

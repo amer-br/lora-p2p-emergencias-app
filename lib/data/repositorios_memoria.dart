@@ -2,16 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import '../domain/atencion.dart';
 import '../domain/modelos.dart';
 import 'repositorios.dart';
 
 /// Persistencia en memoria para la versión web (solo demostración): los
 /// datos se pierden al recargar la página.
 Future<Almacen> abrirAlmacen() async => Almacen(
-      incidentes: _IncidenteRepositoryMemoria(),
-      safetyChecks: _SafetyCheckRepositoryMemoria(),
-      recursos: _RecursoRepositoryMemoria(),
-    );
+  incidentes: _IncidenteRepositoryMemoria(),
+  acuses: AcuseRepositoryMemoria(),
+  safetyChecks: _SafetyCheckRepositoryMemoria(),
+  recursos: _RecursoRepositoryMemoria(),
+);
 
 /// Mapa Msg_ID → registro con notificación de cambios, para imitar los
 /// `watch` de Isar.
@@ -52,16 +54,66 @@ class _IncidenteRepositoryMemoria implements IncidenteRepository {
   }
 
   @override
-  Future<List<Incidente>> pendientesPropios() async => _t.datos.values
-      .where((i) => i.origen == Origen.propio && i.estadoEnvio == EstadoEnvio.pendiente)
-      .toList();
+  Future<List<Incidente>> pendientesPropios() async =>
+      _t.datos.values
+          .where(
+            (i) =>
+                i.origen == Origen.propio &&
+                i.estadoEnvio == EstadoEnvio.pendiente,
+          )
+          .toList();
 
   @override
-  Stream<List<Incidente>> observarTodos() => _t.observar(() => _t.datos.values.toList()
-    ..sort((a, b) => b.horaRecepcionLocal.compareTo(a.horaRecepcionLocal)));
+  Stream<List<Incidente>> observarTodos() => _t.observar(
+    () =>
+        _t.datos.values.toList()..sort(
+          (a, b) => b.horaRecepcionLocal.compareTo(a.horaRecepcionLocal),
+        ),
+  );
 
   @override
   Stream<Incidente?> observar(int msgId) => _t.observar(() => _t.datos[msgId]);
+}
+
+/// Pública para usarla en las pruebas sin Isar.
+class AcuseRepositoryMemoria implements AcuseRepository {
+  final _t = _Tabla<Acuse>();
+
+  Iterable<Acuse> get _propios =>
+      _t.datos.values.where((a) => a.origen == Origen.propio);
+
+  @override
+  Future<void> guardar(Acuse a) async => _t.poner(a.msgId, a);
+
+  @override
+  Future<bool> insertarSiNuevo(Acuse a) async {
+    if (_t.datos.containsKey(a.msgId)) return false;
+    _t.poner(a.msgId, a);
+    return true;
+  }
+
+  @override
+  Future<void> actualizarEstadoEnvio(int msgId, EstadoEnvio estado) async {
+    final a = _t.datos[msgId];
+    if (a != null) _t.poner(msgId, a.copyWith(estadoEnvio: estado));
+  }
+
+  @override
+  Future<List<Acuse>> pendientesPropios() async =>
+      _propios.where((a) => a.estadoEnvio == EstadoEnvio.pendiente).toList();
+
+  @override
+  Future<int> propiosDesde(DateTime desde) async =>
+      _propios.where((a) => a.horaRecepcionLocal.isAfter(desde)).length;
+
+  @override
+  Stream<List<Acuse>> observarDe(int refMsgId) => _t.observar(
+    () => _t.datos.values.where((a) => a.refMsgId == refMsgId).toList(),
+  );
+
+  @override
+  Stream<List<Acuse>> observarTodos() =>
+      _t.observar(() => _t.datos.values.toList());
 }
 
 class _SafetyCheckRepositoryMemoria implements SafetyCheckRepository {
@@ -108,14 +160,15 @@ class _SafetyCheckRepositoryMemoria implements SafetyCheckRepository {
 
   @override
   Stream<ReporteSafetyCheck?> observarUltimoPropio() => _t.observar(() {
-        ReporteSafetyCheck? ultimo;
-        for (final r in _propios) {
-          if (ultimo == null || r.horaRecepcionLocal.isAfter(ultimo.horaRecepcionLocal)) {
-            ultimo = r;
-          }
-        }
-        return ultimo;
-      });
+    ReporteSafetyCheck? ultimo;
+    for (final r in _propios) {
+      if (ultimo == null ||
+          r.horaRecepcionLocal.isAfter(ultimo.horaRecepcionLocal)) {
+        ultimo = r;
+      }
+    }
+    return ultimo;
+  });
 }
 
 class _RecursoRepositoryMemoria implements RecursoRepository {

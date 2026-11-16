@@ -1520,6 +1520,1517 @@ extension IncidenteEntityQueryProperty
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
+extension GetAcuseEntityCollection on Isar {
+  IsarCollection<AcuseEntity> get acuseEntitys => this.collection();
+}
+
+const AcuseEntitySchema = CollectionSchema(
+  name: r'AcuseEntity',
+  id: 7687121877241992538,
+  properties: {
+    r'estadoEnvio': PropertySchema(
+      id: 0,
+      name: r'estadoEnvio',
+      type: IsarType.int,
+      enumMap: _AcuseEntityestadoEnvioEnumValueMap,
+    ),
+    r'horaEmisor': PropertySchema(
+      id: 1,
+      name: r'horaEmisor',
+      type: IsarType.long,
+    ),
+    r'horaRecepcionLocal': PropertySchema(
+      id: 2,
+      name: r'horaRecepcionLocal',
+      type: IsarType.dateTime,
+    ),
+    r'origen': PropertySchema(
+      id: 3,
+      name: r'origen',
+      type: IsarType.byte,
+      enumMap: _AcuseEntityorigenEnumValueMap,
+    ),
+    r'refMsgId': PropertySchema(id: 4, name: r'refMsgId', type: IsarType.long),
+    r'rssi': PropertySchema(id: 5, name: r'rssi', type: IsarType.long),
+    r'senderId': PropertySchema(id: 6, name: r'senderId', type: IsarType.long),
+    r'snr': PropertySchema(id: 7, name: r'snr', type: IsarType.double),
+    r'tipo': PropertySchema(id: 8, name: r'tipo', type: IsarType.long),
+  },
+
+  estimateSize: _acuseEntityEstimateSize,
+  serialize: _acuseEntitySerialize,
+  deserialize: _acuseEntityDeserialize,
+  deserializeProp: _acuseEntityDeserializeProp,
+  idName: r'msgId',
+  indexes: {
+    r'refMsgId': IndexSchema(
+      id: 5813586342869141714,
+      name: r'refMsgId',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'refMsgId',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
+      ],
+    ),
+    r'horaRecepcionLocal': IndexSchema(
+      id: -6938150827591640520,
+      name: r'horaRecepcionLocal',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'horaRecepcionLocal',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
+      ],
+    ),
+  },
+  links: {},
+  embeddedSchemas: {},
+
+  getId: _acuseEntityGetId,
+  getLinks: _acuseEntityGetLinks,
+  attach: _acuseEntityAttach,
+  version: '3.3.1',
+);
+
+int _acuseEntityEstimateSize(
+  AcuseEntity object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  return bytesCount;
+}
+
+void _acuseEntitySerialize(
+  AcuseEntity object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeInt(offsets[0], object.estadoEnvio?.index);
+  writer.writeLong(offsets[1], object.horaEmisor);
+  writer.writeDateTime(offsets[2], object.horaRecepcionLocal);
+  writer.writeByte(offsets[3], object.origen.index);
+  writer.writeLong(offsets[4], object.refMsgId);
+  writer.writeLong(offsets[5], object.rssi);
+  writer.writeLong(offsets[6], object.senderId);
+  writer.writeDouble(offsets[7], object.snr);
+  writer.writeLong(offsets[8], object.tipo);
+}
+
+AcuseEntity _acuseEntityDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = AcuseEntity();
+  object.estadoEnvio =
+      _AcuseEntityestadoEnvioValueEnumMap[reader.readIntOrNull(offsets[0])];
+  object.horaEmisor = reader.readLong(offsets[1]);
+  object.horaRecepcionLocal = reader.readDateTime(offsets[2]);
+  object.msgId = id;
+  object.origen =
+      _AcuseEntityorigenValueEnumMap[reader.readByteOrNull(offsets[3])] ??
+      Origen.propio;
+  object.refMsgId = reader.readLong(offsets[4]);
+  object.rssi = reader.readLongOrNull(offsets[5]);
+  object.senderId = reader.readLong(offsets[6]);
+  object.snr = reader.readDoubleOrNull(offsets[7]);
+  object.tipo = reader.readLong(offsets[8]);
+  return object;
+}
+
+P _acuseEntityDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (_AcuseEntityestadoEnvioValueEnumMap[reader.readIntOrNull(offset)])
+          as P;
+    case 1:
+      return (reader.readLong(offset)) as P;
+    case 2:
+      return (reader.readDateTime(offset)) as P;
+    case 3:
+      return (_AcuseEntityorigenValueEnumMap[reader.readByteOrNull(offset)] ??
+              Origen.propio)
+          as P;
+    case 4:
+      return (reader.readLong(offset)) as P;
+    case 5:
+      return (reader.readLongOrNull(offset)) as P;
+    case 6:
+      return (reader.readLong(offset)) as P;
+    case 7:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 8:
+      return (reader.readLong(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+const _AcuseEntityestadoEnvioEnumValueMap = {
+  'pendiente': 0,
+  'enviado': 1,
+  'error': 2,
+};
+const _AcuseEntityestadoEnvioValueEnumMap = {
+  0: EstadoEnvio.pendiente,
+  1: EstadoEnvio.enviado,
+  2: EstadoEnvio.error,
+};
+const _AcuseEntityorigenEnumValueMap = {'propio': 0, 'recibido': 1};
+const _AcuseEntityorigenValueEnumMap = {0: Origen.propio, 1: Origen.recibido};
+
+Id _acuseEntityGetId(AcuseEntity object) {
+  return object.msgId;
+}
+
+List<IsarLinkBase<dynamic>> _acuseEntityGetLinks(AcuseEntity object) {
+  return [];
+}
+
+void _acuseEntityAttach(
+  IsarCollection<dynamic> col,
+  Id id,
+  AcuseEntity object,
+) {
+  object.msgId = id;
+}
+
+extension AcuseEntityQueryWhereSort
+    on QueryBuilder<AcuseEntity, AcuseEntity, QWhere> {
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhere> anyMsgId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhere> anyRefMsgId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'refMsgId'),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhere> anyHoraRecepcionLocal() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'horaRecepcionLocal'),
+      );
+    });
+  }
+}
+
+extension AcuseEntityQueryWhere
+    on QueryBuilder<AcuseEntity, AcuseEntity, QWhereClause> {
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause> msgIdEqualTo(
+    Id msgId,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.between(lower: msgId, upper: msgId),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause> msgIdNotEqualTo(
+    Id msgId,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: msgId, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: msgId, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: msgId, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: msgId, includeUpper: false),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause> msgIdGreaterThan(
+    Id msgId, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: msgId, includeLower: include),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause> msgIdLessThan(
+    Id msgId, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: msgId, includeUpper: include),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause> msgIdBetween(
+    Id lowerMsgId,
+    Id upperMsgId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerMsgId,
+          includeLower: includeLower,
+          upper: upperMsgId,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause> refMsgIdEqualTo(
+    int refMsgId,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'refMsgId', value: [refMsgId]),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause> refMsgIdNotEqualTo(
+    int refMsgId,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'refMsgId',
+                lower: [],
+                upper: [refMsgId],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'refMsgId',
+                lower: [refMsgId],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'refMsgId',
+                lower: [refMsgId],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'refMsgId',
+                lower: [],
+                upper: [refMsgId],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause> refMsgIdGreaterThan(
+    int refMsgId, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'refMsgId',
+          lower: [refMsgId],
+          includeLower: include,
+          upper: [],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause> refMsgIdLessThan(
+    int refMsgId, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'refMsgId',
+          lower: [],
+          upper: [refMsgId],
+          includeUpper: include,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause> refMsgIdBetween(
+    int lowerRefMsgId,
+    int upperRefMsgId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'refMsgId',
+          lower: [lowerRefMsgId],
+          includeLower: includeLower,
+          upper: [upperRefMsgId],
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause>
+  horaRecepcionLocalEqualTo(DateTime horaRecepcionLocal) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'horaRecepcionLocal',
+          value: [horaRecepcionLocal],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause>
+  horaRecepcionLocalNotEqualTo(DateTime horaRecepcionLocal) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'horaRecepcionLocal',
+                lower: [],
+                upper: [horaRecepcionLocal],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'horaRecepcionLocal',
+                lower: [horaRecepcionLocal],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'horaRecepcionLocal',
+                lower: [horaRecepcionLocal],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'horaRecepcionLocal',
+                lower: [],
+                upper: [horaRecepcionLocal],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause>
+  horaRecepcionLocalGreaterThan(
+    DateTime horaRecepcionLocal, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'horaRecepcionLocal',
+          lower: [horaRecepcionLocal],
+          includeLower: include,
+          upper: [],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause>
+  horaRecepcionLocalLessThan(
+    DateTime horaRecepcionLocal, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'horaRecepcionLocal',
+          lower: [],
+          upper: [horaRecepcionLocal],
+          includeUpper: include,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterWhereClause>
+  horaRecepcionLocalBetween(
+    DateTime lowerHoraRecepcionLocal,
+    DateTime upperHoraRecepcionLocal, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'horaRecepcionLocal',
+          lower: [lowerHoraRecepcionLocal],
+          includeLower: includeLower,
+          upper: [upperHoraRecepcionLocal],
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+}
+
+extension AcuseEntityQueryFilter
+    on QueryBuilder<AcuseEntity, AcuseEntity, QFilterCondition> {
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  estadoEnvioIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'estadoEnvio'),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  estadoEnvioIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'estadoEnvio'),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  estadoEnvioEqualTo(EstadoEnvio? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'estadoEnvio', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  estadoEnvioGreaterThan(EstadoEnvio? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'estadoEnvio',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  estadoEnvioLessThan(EstadoEnvio? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'estadoEnvio',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  estadoEnvioBetween(
+    EstadoEnvio? lower,
+    EstadoEnvio? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'estadoEnvio',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  horaEmisorEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'horaEmisor', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  horaEmisorGreaterThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'horaEmisor',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  horaEmisorLessThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'horaEmisor',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  horaEmisorBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'horaEmisor',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  horaRecepcionLocalEqualTo(DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'horaRecepcionLocal', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  horaRecepcionLocalGreaterThan(DateTime value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'horaRecepcionLocal',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  horaRecepcionLocalLessThan(DateTime value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'horaRecepcionLocal',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  horaRecepcionLocalBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'horaRecepcionLocal',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> msgIdEqualTo(
+    Id value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'msgId', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  msgIdGreaterThan(Id value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'msgId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> msgIdLessThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'msgId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> msgIdBetween(
+    Id lower,
+    Id upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'msgId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> origenEqualTo(
+    Origen value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'origen', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  origenGreaterThan(Origen value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'origen',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> origenLessThan(
+    Origen value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'origen',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> origenBetween(
+    Origen lower,
+    Origen upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'origen',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> refMsgIdEqualTo(
+    int value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'refMsgId', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  refMsgIdGreaterThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'refMsgId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  refMsgIdLessThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'refMsgId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> refMsgIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'refMsgId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> rssiIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'rssi'),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  rssiIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'rssi'),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> rssiEqualTo(
+    int? value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'rssi', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> rssiGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'rssi',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> rssiLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'rssi',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> rssiBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'rssi',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> senderIdEqualTo(
+    int value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'senderId', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  senderIdGreaterThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'senderId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition>
+  senderIdLessThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'senderId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> senderIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'senderId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> snrIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'snr'),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> snrIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'snr'),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> snrEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'snr',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> snrGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'snr',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> snrLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'snr',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> snrBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'snr',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> tipoEqualTo(
+    int value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'tipo', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> tipoGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'tipo',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> tipoLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'tipo',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterFilterCondition> tipoBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'tipo',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+}
+
+extension AcuseEntityQueryObject
+    on QueryBuilder<AcuseEntity, AcuseEntity, QFilterCondition> {}
+
+extension AcuseEntityQueryLinks
+    on QueryBuilder<AcuseEntity, AcuseEntity, QFilterCondition> {}
+
+extension AcuseEntityQuerySortBy
+    on QueryBuilder<AcuseEntity, AcuseEntity, QSortBy> {
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByEstadoEnvio() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'estadoEnvio', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByEstadoEnvioDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'estadoEnvio', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByHoraEmisor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'horaEmisor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByHoraEmisorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'horaEmisor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy>
+  sortByHoraRecepcionLocal() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'horaRecepcionLocal', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy>
+  sortByHoraRecepcionLocalDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'horaRecepcionLocal', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByOrigen() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'origen', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByOrigenDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'origen', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByRefMsgId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'refMsgId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByRefMsgIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'refMsgId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByRssi() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rssi', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByRssiDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rssi', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortBySenderId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'senderId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortBySenderIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'senderId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortBySnr() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'snr', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortBySnrDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'snr', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByTipo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tipo', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> sortByTipoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tipo', Sort.desc);
+    });
+  }
+}
+
+extension AcuseEntityQuerySortThenBy
+    on QueryBuilder<AcuseEntity, AcuseEntity, QSortThenBy> {
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByEstadoEnvio() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'estadoEnvio', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByEstadoEnvioDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'estadoEnvio', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByHoraEmisor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'horaEmisor', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByHoraEmisorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'horaEmisor', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy>
+  thenByHoraRecepcionLocal() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'horaRecepcionLocal', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy>
+  thenByHoraRecepcionLocalDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'horaRecepcionLocal', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByMsgId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'msgId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByMsgIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'msgId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByOrigen() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'origen', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByOrigenDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'origen', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByRefMsgId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'refMsgId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByRefMsgIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'refMsgId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByRssi() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rssi', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByRssiDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rssi', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenBySenderId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'senderId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenBySenderIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'senderId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenBySnr() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'snr', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenBySnrDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'snr', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByTipo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tipo', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QAfterSortBy> thenByTipoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tipo', Sort.desc);
+    });
+  }
+}
+
+extension AcuseEntityQueryWhereDistinct
+    on QueryBuilder<AcuseEntity, AcuseEntity, QDistinct> {
+  QueryBuilder<AcuseEntity, AcuseEntity, QDistinct> distinctByEstadoEnvio() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'estadoEnvio');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QDistinct> distinctByHoraEmisor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'horaEmisor');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QDistinct>
+  distinctByHoraRecepcionLocal() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'horaRecepcionLocal');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QDistinct> distinctByOrigen() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'origen');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QDistinct> distinctByRefMsgId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'refMsgId');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QDistinct> distinctByRssi() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'rssi');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QDistinct> distinctBySenderId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'senderId');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QDistinct> distinctBySnr() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'snr');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, AcuseEntity, QDistinct> distinctByTipo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'tipo');
+    });
+  }
+}
+
+extension AcuseEntityQueryProperty
+    on QueryBuilder<AcuseEntity, AcuseEntity, QQueryProperty> {
+  QueryBuilder<AcuseEntity, int, QQueryOperations> msgIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'msgId');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, EstadoEnvio?, QQueryOperations>
+  estadoEnvioProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'estadoEnvio');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, int, QQueryOperations> horaEmisorProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'horaEmisor');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, DateTime, QQueryOperations>
+  horaRecepcionLocalProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'horaRecepcionLocal');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, Origen, QQueryOperations> origenProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'origen');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, int, QQueryOperations> refMsgIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'refMsgId');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, int?, QQueryOperations> rssiProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'rssi');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, int, QQueryOperations> senderIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'senderId');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, double?, QQueryOperations> snrProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'snr');
+    });
+  }
+
+  QueryBuilder<AcuseEntity, int, QQueryOperations> tipoProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'tipo');
+    });
+  }
+}
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
 extension GetSafetyCheckEntityCollection on Isar {
   IsarCollection<SafetyCheckEntity> get safetyCheckEntitys => this.collection();
 }

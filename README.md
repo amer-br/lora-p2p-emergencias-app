@@ -9,6 +9,12 @@ MVP de la app Flutter descrita en la SRS v1 y el SDS. Cubre los casos de uso:
 | CU-03 | Radar y mapa fuera de línea | `lib/ui/radar_screen.dart` |
 | CU-04 | Guía de primeros auxilios | `lib/ui/primeros_auxilios_screen.dart` |
 | CU-06 | Reportar "Estoy a salvo" | `lib/ui/safety_check_screen.dart` |
+| CU-08 | Acusar "Voy en camino" / "Llegué" | `lib/ui/atencion_widgets.dart` (tarjeta del incidente en el radar) |
+| CU-09 | Marcar un incidente como resuelto | `lib/ui/atencion_widgets.dart`, `lib/ui/sos_screen.dart` |
+| CU-10 | Consolidar los acuses recibidos | `lib/domain/atencion.dart`, `lib/application/procesador_entrante.dart` |
+| CU-11 | Consultar el estado de atención | Radar (lista, tarjeta y marcadores), SOS y pantalla principal |
+
+**Acuses.** El estado de un incidente (Emitido, En asistencia o Resuelto) no viaja por radio: se calcula con `consolidarAtencion` a partir de los acuses conocidos, con las mismas reglas que el panel, así que todos los nodos convergen aunque los acuses lleguen en desorden o repetidos. Un acuse que llega antes que su incidente se guarda y se aplica al llegar este. Solo quien emitió el incidente o quien ya acusó "Llegué" puede resolverlo, y Resuelto es definitivo.
 
 ## Estructura (componentes del SDS, nivel 3)
 

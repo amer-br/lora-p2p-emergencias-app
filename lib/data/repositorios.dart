@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import '../domain/atencion.dart';
 import '../domain/modelos.dart';
 
 /// Contratos de persistencia local. La implementación se elige en
@@ -22,6 +23,27 @@ abstract class IncidenteRepository {
   Stream<List<Incidente>> observarTodos();
 
   Stream<Incidente?> observar(int msgId);
+}
+
+/// Acuses propios y recibidos (CU-08 a CU-11).
+abstract class AcuseRepository {
+  Future<void> guardar(Acuse a);
+
+  /// Inserta solo si el Msg_ID no existe. Devuelve false si era duplicado.
+  Future<bool> insertarSiNuevo(Acuse a);
+
+  Future<void> actualizarEstadoEnvio(int msgId, EstadoEnvio estado);
+
+  Future<List<Acuse>> pendientesPropios();
+
+  /// Acuses propios creados después de [desde] (límite de RNF-4.3).
+  Future<int> propiosDesde(DateTime desde);
+
+  /// Acuses de un incidente, incluidos los que llegaron antes que él.
+  Stream<List<Acuse>> observarDe(int refMsgId);
+
+  /// Todos los acuses, para calcular el estado de cada incidente en listas.
+  Stream<List<Acuse>> observarTodos();
 }
 
 abstract class SafetyCheckRepository {
@@ -51,18 +73,21 @@ abstract class RecursoRepository {
 class Almacen {
   const Almacen({
     required this.incidentes,
+    required this.acuses,
     required this.safetyChecks,
     required this.recursos,
   });
 
   final IncidenteRepository incidentes;
+  final AcuseRepository acuses;
   final SafetyCheckRepository safetyChecks;
   final RecursoRepository recursos;
 }
 
 /// Lee `recursos.json`. Lanza una excepción si el contenido es inválido (E1).
 Future<List<RecursoMapa>> leerRecursosIncluidos(AssetBundle bundle) async {
-  final datos = jsonDecode(await bundle.loadString(RecursoRepository.asset)) as List;
+  final datos =
+      jsonDecode(await bundle.loadString(RecursoRepository.asset)) as List;
   final ahora = DateTime.now();
   var id = 1;
   return [

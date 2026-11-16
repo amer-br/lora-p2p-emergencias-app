@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app_scope.dart';
+import 'dart:async';
+
+import '../domain/atencion.dart';
 import '../domain/modelos.dart';
 import '../services/modem_service.dart';
 import 'nueva_alerta_screen.dart';
@@ -22,6 +25,36 @@ class InicioScreen extends StatefulWidget {
 
 class _InicioScreenState extends State<InicioScreen> {
   bool _enviandoSos = false;
+  StreamSubscription<Acuse>? _acusesNuevos;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _acusesNuevos ??= AppScope.of(
+      context,
+    ).procesador.acusesNuevos.listen(_alRecibirAcuse);
+  }
+
+  @override
+  void dispose() {
+    _acusesNuevos?.cancel();
+    super.dispose();
+  }
+
+  /// CU-11: avisa a la persona afectada cuando alguien responde a su alerta.
+  Future<void> _alRecibirAcuse(Acuse a) async {
+    final deps = AppScope.of(context);
+    final incidente = await deps.incidentes.observar(a.refMsgId).first;
+    if (!mounted || incidente == null || incidente.origen != Origen.propio) {
+      return;
+    }
+    HapticFeedback.vibrate();
+    mostrarMensaje(context, switch (a.tipo) {
+      TipoAcuse.enCamino => 'Alguien va en camino a tu alerta.',
+      TipoAcuse.llegue => 'Alguien llegó al lugar de tu alerta.',
+      TipoAcuse.resuelto => 'Tu alerta se marcó como resuelta.',
+    });
+  }
 
   Future<void> _sos() async {
     if (_enviandoSos) return;
@@ -362,7 +395,19 @@ class _SosActivoState extends State<_SosActivo> {
                   color: rojoSosOscuro,
                 ),
               ),
-              subtitle: const Text('Toca para ver el detalle'),
+              subtitle: StreamBuilder<List<Acuse>>(
+                stream: AppScope.of(context).acuses.observarDe(ultimo.msgId),
+                builder: (context, snap) {
+                  final atencion = consolidarAtencion(
+                    snap.data ?? const <Acuse>[],
+                  );
+                  return Text(
+                    atencion.estado == EstadoAtencion.emitido
+                        ? 'Toca para ver el detalle'
+                        : atencion.resumen,
+                  );
+                },
+              ),
               trailing: const Icon(Icons.chevron_right, color: rojoSosOscuro),
               onTap: () => widget.onAbrir(ultimo),
             ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../data/repositorios.dart';
+import '../domain/atencion.dart';
 import '../domain/categoria.dart';
 import '../domain/modelos.dart';
 import '../protocol/tramas.dart';
@@ -23,6 +24,23 @@ enum ResultadoEnvio {
   limiteExcedido,
 }
 
+/// Resultado de emitir un acuse (CU-08, CU-09).
+enum ResultadoAcuse {
+  enviado,
+  pendiente,
+  errorBaseDatos,
+  limiteExcedido,
+
+  /// A1: esta persona ya emitió ese tipo de acuse para el incidente.
+  yaEmitido,
+
+  /// E2: el incidente ya está resuelto; Resuelto es terminal (RNF-4.4).
+  incidenteResuelto,
+
+  /// E1 de CU-09: para resolver hay que ser el emisor o haber acusado «Llegué».
+  noPuedeResolver,
+}
+
 class ResultadoEmision {
   const ResultadoEmision(this.resultado, [this.incidente]);
 
@@ -38,13 +56,15 @@ class EnvioService {
   EnvioService({
     required this.senderId,
     required IncidenteRepository incidentes,
+    required AcuseRepository acuses,
     required SafetyCheckRepository safetyChecks,
     required ModemService modem,
     required UbicacionService ubicacion,
-  })  : _incidentes = incidentes,
-        _safetyChecks = safetyChecks,
-        _modem = modem,
-        _ubicacion = ubicacion {
+  }) : _incidentes = incidentes,
+       _acuses = acuses,
+       _safetyChecks = safetyChecks,
+       _modem = modem,
+       _ubicacion = ubicacion {
     _modem.estado.addListener(_alCambiarModem);
   }
 
@@ -52,6 +72,7 @@ class EnvioService {
 
   final int senderId;
   final IncidenteRepository _incidentes;
+  final AcuseRepository _acuses;
   final SafetyCheckRepository _safetyChecks;
   final ModemService _modem;
   final UbicacionService _ubicacion;
@@ -85,7 +106,9 @@ class EnvioService {
       debugPrint('Error al guardar SOS (se envía de todos modos): $e');
       final ok = await _modem.enviar(_tramaDe(incidente));
       return ResultadoEmision(
-          ok ? ResultadoEnvio.enviado : ResultadoEnvio.pendiente, incidente);
+        ok ? ResultadoEnvio.enviado : ResultadoEnvio.pendiente,
+        incidente,
+      );
     }
     return ResultadoEmision(await _transmitirIncidente(incidente), incidente);
   }
@@ -97,7 +120,8 @@ class EnvioService {
   /// CU-06: reporte "Estoy a salvo". Cada reenvío usa un Msg_ID nuevo (A1).
   Future<ResultadoEnvio> reportarASalvo() async {
     final haceUnMinuto = DateTime.now().subtract(const Duration(minutes: 1));
-    if (await _safetyChecks.propiosDesde(haceUnMinuto) >= maxReportesPorMinuto) {
+    if (await _safetyChecks.propiosDesde(haceUnMinuto) >=
+        maxReportesPorMinuto) {
       return ResultadoEnvio.limiteExcedido;
     }
     final ahora = DateTime.now();
@@ -119,6 +143,57 @@ class EnvioService {
     return _transmitirSafetyCheck(reporte);
   }
 
+  /// CU-08 y CU-09: acusa «Voy en camino», «Llegué» o «Resuelto».
+  ///
+  /// El acuse se guarda como Pendiente antes de entregarse al módem, igual
+  /// que una alerta (RNF-2.3), y el estado del incidente se recalcula de
+  /// inmediato porque la pantalla observa los acuses (RNF-1.4).
+  Future<ResultadoAcuse> emitirAcuse(
+    Incidente incidente,
+    TipoAcuse tipo,
+  ) async {
+    final conocidos = await _acuses.observarDe(incidente.msgId).first;
+    if (consolidarAtencion(conocidos).resuelto) {
+      return ResultadoAcuse.incidenteResuelto;
+    }
+    if (yaAcuso(miSenderId: senderId, tipo: tipo, acuses: conocidos)) {
+      return ResultadoAcuse.yaEmitido;
+    }
+    if (tipo == TipoAcuse.resuelto &&
+        !puedeResolver(
+          incidente: incidente,
+          miSenderId: senderId,
+          acuses: conocidos,
+        )) {
+      return ResultadoAcuse.noPuedeResolver;
+    }
+    final haceUnMinuto = DateTime.now().subtract(const Duration(minutes: 1));
+    if (await _acuses.propiosDesde(haceUnMinuto) >= maxReportesPorMinuto) {
+      return ResultadoAcuse.limiteExcedido;
+    }
+
+    final ahora = DateTime.now();
+    final acuse = Acuse(
+      msgId: generarId32(),
+      senderId: senderId,
+      tipo: tipo,
+      refMsgId: incidente.msgId,
+      horaEmisor: ahora.millisecondsSinceEpoch ~/ 1000,
+      horaRecepcionLocal: ahora,
+      origen: Origen.propio,
+      estadoEnvio: EstadoEnvio.pendiente,
+    );
+    try {
+      await _acuses.guardar(acuse);
+    } catch (e) {
+      debugPrint('Error al guardar acuse: $e');
+      return ResultadoAcuse.errorBaseDatos;
+    }
+    return await _transmitirAcuse(acuse) == ResultadoEnvio.enviado
+        ? ResultadoAcuse.enviado
+        : ResultadoAcuse.pendiente;
+  }
+
   /// Envía lo que quedó Pendiente mientras el módem estaba desconectado.
   Future<void> reenviarPendientes() async {
     if (_reenviando || !_modem.estado.value.conectado) return;
@@ -126,6 +201,9 @@ class EnvioService {
     try {
       for (final i in await _incidentes.pendientesPropios()) {
         await _transmitirIncidente(i);
+      }
+      for (final a in await _acuses.pendientesPropios()) {
+        await _transmitirAcuse(a);
       }
       for (final r in await _safetyChecks.pendientesPropios()) {
         await _transmitirSafetyCheck(r);
@@ -155,15 +233,17 @@ class EnvioService {
     );
   }
 
-  Uint8List _tramaDe(Incidente i) => CodecTramas.codificar(TramaAlerta(
-        msgId: i.msgId,
-        senderId: i.senderId,
-        tipo: i.tipo,
-        lat: i.lat,
-        lon: i.lon,
-        unixTime: i.horaEmisor,
-        texto: i.texto,
-      ));
+  Uint8List _tramaDe(Incidente i) => CodecTramas.codificar(
+    TramaAlerta(
+      msgId: i.msgId,
+      senderId: i.senderId,
+      tipo: i.tipo,
+      lat: i.lat,
+      lon: i.lon,
+      unixTime: i.horaEmisor,
+      texto: i.texto,
+    ),
+  );
 
   Future<ResultadoEnvio> _transmitirIncidente(Incidente i) async {
     if (!await _modem.enviar(_tramaDe(i))) return ResultadoEnvio.pendiente;
@@ -171,13 +251,30 @@ class EnvioService {
     return ResultadoEnvio.enviado;
   }
 
+  Future<ResultadoEnvio> _transmitirAcuse(Acuse a) async {
+    final trama = CodecTramas.codificar(
+      TramaAcuse(
+        msgId: a.msgId,
+        senderId: a.senderId,
+        tipo: a.tipo.tipo,
+        refMsgId: a.refMsgId,
+        unixTime: a.horaEmisor,
+      ),
+    );
+    if (!await _modem.enviar(trama)) return ResultadoEnvio.pendiente;
+    await _acuses.actualizarEstadoEnvio(a.msgId, EstadoEnvio.enviado);
+    return ResultadoEnvio.enviado;
+  }
+
   Future<ResultadoEnvio> _transmitirSafetyCheck(ReporteSafetyCheck r) async {
-    final trama = CodecTramas.codificar(TramaSafetyCheck(
-      msgId: r.msgId,
-      senderId: r.senderId,
-      estado: r.estado,
-      unixTime: r.horaEmisor,
-    ));
+    final trama = CodecTramas.codificar(
+      TramaSafetyCheck(
+        msgId: r.msgId,
+        senderId: r.senderId,
+        estado: r.estado,
+        unixTime: r.horaEmisor,
+      ),
+    );
     if (!await _modem.enviar(trama)) return ResultadoEnvio.pendiente;
     await _safetyChecks.actualizarEstadoEnvio(r.msgId, EstadoEnvio.enviado);
     return ResultadoEnvio.enviado;

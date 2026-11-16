@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import '../app_scope.dart';
 import '../application/envio_service.dart';
 import '../domain/geo.dart';
+import '../domain/atencion.dart';
 import '../domain/modelos.dart';
+import 'atencion_widgets.dart';
 import 'tema.dart';
 import 'widgets.dart';
 
@@ -119,10 +121,34 @@ class _SosScreenState extends State<SosScreen> {
                   'Módem sin conexión. Tu SOS se enviará al reconectar.',
                 )
               else
-                const Aviso(
-                  'Aún no hay respuesta de otros nodos. Si no llega ayuda, reenvía el SOS.',
-                  icono: Icons.info_outline,
+                StreamBuilder<List<Acuse>>(
+                  stream: deps.acuses.observarDe(i.msgId),
+                  builder: (context, snap) {
+                    final atencion = consolidarAtencion(
+                      snap.data ?? const <Acuse>[],
+                    );
+                    return switch (atencion.estado) {
+                      EstadoAtencion.emitido => const Aviso(
+                        'Aún no hay respuesta de otros nodos. Si no llega ayuda, reenvía el SOS.',
+                        icono: Icons.info_outline,
+                      ),
+                      EstadoAtencion.enAsistencia => Aviso.ok(
+                        'Viene ayuda: ${atencion.resumen.replaceFirst('En asistencia · ', '')}.',
+                        icono: Icons.directions_run_rounded,
+                      ),
+                      EstadoAtencion.resuelto => const Aviso.ok(
+                        'Tu SOS se marcó como resuelto.',
+                      ),
+                    };
+                  },
                 ),
+              const SizedBox(height: 12),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: PanelAtencion(incidente: i),
+                ),
+              ),
               const SizedBox(height: 24),
               BotonGrande(
                 color: rojoSos,

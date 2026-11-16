@@ -7,10 +7,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../app_scope.dart';
+import '../domain/atencion.dart';
 import '../domain/categoria.dart';
 import '../domain/geo.dart';
 import '../domain/modelos.dart';
 import '../services/ubicacion_service.dart';
+import 'atencion_widgets.dart';
 import 'primeros_auxilios_screen.dart';
 import 'tema.dart';
 import 'widgets.dart';
@@ -52,6 +54,7 @@ class _RadarScreenState extends State<RadarScreen> {
   bool _mapaListo = false;
 
   List<Incidente> _incidentes = const [];
+  Map<int, AtencionIncidente> _atencion = const {};
   List<RecursoMapa>? _recursos;
   bool _errorRecursos = false;
 
@@ -88,6 +91,11 @@ class _RadarScreenState extends State<RadarScreen> {
     _subs.add(
       deps.incidentes.observarTodos().listen(
         (l) => setState(() => _incidentes = l),
+      ),
+    );
+    _subs.add(
+      deps.acuses.observarTodos().listen(
+        (l) => setState(() => _atencion = atencionPorIncidente(l)),
       ),
     );
     _subs.add(deps.procesador.incidentesNuevos.listen(_alRecibirIncidente));
@@ -179,6 +187,9 @@ class _RadarScreenState extends State<RadarScreen> {
     _pendienteMasCercano = null;
     _masCercano(tipo);
   }
+
+  AtencionIncidente _atencionDe(Incidente i) =>
+      _atencion[i.msgId] ?? AtencionIncidente.sinAcuses;
 
   double? _distancia(double? lat, double? lon) {
     final p = _posicion;
@@ -512,6 +523,7 @@ class _RadarScreenState extends State<RadarScreen> {
                 height: 56,
                 child: _MarcadorIncidente(
                   incidente: i,
+                  resuelto: _atencionDe(i).resuelto,
                   seleccionado:
                       _seleccion is Incidente &&
                       (_seleccion as Incidente).msgId == i.msgId,
@@ -538,10 +550,17 @@ class _RadarScreenState extends State<RadarScreen> {
 
   Widget _lista() {
     final incidentes = [..._incidentesVisibles]..sort((a, b) {
+      // Los resueltos al final; siguen visibles para su trazabilidad (RNF-4.4).
+      final r = (_atencionDe(a).resuelto ? 1 : 0).compareTo(
+        _atencionDe(b).resuelto ? 1 : 0,
+      );
+      if (r != 0) return r;
       final p = a.prioridad.orden.compareTo(b.prioridad.orden);
       if (p != 0) return p;
-      // "Sin atención" primero; en el MVP todos están en estado Emitido.
-      final e = a.estadoAtencion.index.compareTo(b.estadoAtencion.index);
+      // Dentro de la misma prioridad, «Sin atención» primero.
+      final e = _atencionDe(
+        a,
+      ).estado.index.compareTo(_atencionDe(b).estado.index);
       if (e != 0) return e;
       return (_distancia(a.lat, a.lon) ?? double.infinity).compareTo(
         _distancia(b.lat, b.lon) ?? double.infinity,
@@ -584,7 +603,7 @@ class _RadarScreenState extends State<RadarScreen> {
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                     subtitle: Text(
-                      '${_textoDistancia(i.lat, i.lon)} · ${formatearAntiguedad(i.horaRecepcionLocal)} · Sin atención',
+                      '${_textoDistancia(i.lat, i.lon)} · ${formatearAntiguedad(i.horaRecepcionLocal)} · ${_atencionDe(i).resumen}',
                     ),
                     trailing: PrioridadChip(i.prioridad),
                     onTap:
@@ -694,14 +713,8 @@ class _RadarScreenState extends State<RadarScreen> {
         Text(
           '${_textoDistancia(i.lat, i.lon)} · ${formatearAntiguedad(i.horaRecepcionLocal)}',
         ),
-        const SizedBox(height: 4),
-        const Row(
-          children: [
-            Icon(Icons.hourglass_empty, size: 16),
-            SizedBox(width: 4),
-            Text('Emitido · Sin atención'),
-          ],
-        ),
+        const SizedBox(height: 10),
+        PanelAtencion(key: ValueKey(i.msgId), incidente: i),
         if (i.categoria == Categorias.medica) ...[
           const SizedBox(height: 8),
           OutlinedButton.icon(
@@ -819,38 +832,45 @@ class _MarcadorIncidente extends StatelessWidget {
     required this.incidente,
     required this.seleccionado,
     required this.onTap,
+    this.resuelto = false,
   });
 
   final Incidente incidente;
   final bool seleccionado;
   final VoidCallback onTap;
 
+  /// Un incidente resuelto se atenúa, pero sigue en el mapa (RNF-4.4).
+  final bool resuelto;
+
   @override
   Widget build(BuildContext context) {
     final color = colorPrioridad(incidente.prioridad);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: fondoPrioridad(incidente.prioridad),
-          border: Border.all(color: color, width: seleccionado ? 5 : 3),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x40000000),
-              blurRadius: 6,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Center(
-          child: CircleAvatar(
-            radius: 16,
-            backgroundColor: color,
-            child: Icon(
-              iconoCategoria(incidente.categoria),
-              color: Colors.white,
-              size: 20,
+    return Opacity(
+      opacity: resuelto ? 0.4 : 1,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: fondoPrioridad(incidente.prioridad),
+            border: Border.all(color: color, width: seleccionado ? 5 : 3),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x40000000),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Center(
+            child: CircleAvatar(
+              radius: 16,
+              backgroundColor: color,
+              child: Icon(
+                iconoCategoria(incidente.categoria),
+                color: Colors.white,
+                size: 20,
+              ),
             ),
           ),
         ),

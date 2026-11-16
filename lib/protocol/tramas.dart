@@ -3,6 +3,8 @@
 ///
 /// Alerta / SOS (56 B):
 ///   Msg_ID 4 | Sender_ID 4 | TTL 1 | Type 1 | Lat 4 | Lon 4 | Unix 4 | Texto 32 | CRC 2
+/// Acuse (20 B):
+///   Msg_ID 4 | Sender_ID 4 | TTL 1 | Type 1 | Ref_Msg_ID 4 | Unix 4 | CRC 2
 /// Safety Check (17 B):
 ///   Msg_ID 4 | Sender_ID 4 | TTL 1 | Type 1 | Estado 1 | Unix 4 | CRC 2
 ///
@@ -35,6 +37,7 @@ abstract final class TipoTrama {
 }
 
 const int longitudAlerta = 56;
+const int longitudAcuse = 20;
 const int longitudSafetyCheck = 17;
 const int _centinelaGps = 0x7FFFFFFF;
 const int _offsetTtl = 8;
@@ -75,6 +78,24 @@ class TramaAlerta extends Trama {
   bool get esSos => tipo == TipoTrama.sos;
 }
 
+/// Acuse de atención (CU-08, CU-09): ACK_EN_CAMINO, ACK_LLEGUE o ACK_RESUELTO.
+class TramaAcuse extends Trama {
+  const TramaAcuse({
+    required super.msgId,
+    required super.senderId,
+    required this.tipo,
+    required this.refMsgId,
+    required this.unixTime,
+    super.ttl = ttlMax,
+  });
+
+  final int tipo;
+
+  /// Msg_ID del incidente al que se refiere.
+  final int refMsgId;
+  final int unixTime;
+}
+
 class TramaSafetyCheck extends Trama {
   const TramaSafetyCheck({
     required super.msgId,
@@ -90,9 +111,10 @@ class TramaSafetyCheck extends Trama {
 
 abstract final class CodecTramas {
   static Uint8List codificar(Trama trama) => switch (trama) {
-        TramaAlerta t => _codificarAlerta(t),
-        TramaSafetyCheck t => _codificarSafetyCheck(t),
-      };
+    TramaAlerta t => _codificarAlerta(t),
+    TramaAcuse t => _codificarAcuse(t),
+    TramaSafetyCheck t => _codificarSafetyCheck(t),
+  };
 
   /// Devuelve null si la trama tiene longitud incorrecta, CRC inválido o un
   /// Type desconocido (se ignora por compatibilidad hacia adelante).
@@ -104,6 +126,10 @@ abstract final class CodecTramas {
         return null;
       }
       return _decodificarSafetyCheck(bytes);
+    }
+    if (_esAcuse(tipo)) {
+      if (bytes.length != longitudAcuse || !_crcValido(bytes)) return null;
+      return _decodificarAcuse(bytes);
     }
     if (Categorias.porTipo(tipo) != null) {
       if (bytes.length != longitudAlerta || !_crcValido(bytes)) return null;
@@ -150,6 +176,39 @@ abstract final class CodecTramas {
       lon: sinGps ? null : lonE7 / 1e7,
       unixTime: d.getUint32(18),
       texto: utf8.decode(b.sublist(22, fin), allowMalformed: true),
+    );
+  }
+
+  static bool _esAcuse(int tipo) =>
+      tipo == TipoTrama.ackEnCamino ||
+      tipo == TipoTrama.ackLlegue ||
+      tipo == TipoTrama.ackResuelto;
+
+  static Uint8List _codificarAcuse(TramaAcuse t) {
+    if (!_esAcuse(t.tipo)) {
+      throw ArgumentError('Type de acuse inválido: ${t.tipo}');
+    }
+    final b = Uint8List(longitudAcuse);
+    final d = ByteData.sublistView(b);
+    d.setUint32(0, t.msgId);
+    d.setUint32(4, t.senderId);
+    d.setUint8(_offsetTtl, t.ttl);
+    d.setUint8(_offsetType, t.tipo);
+    d.setUint32(10, t.refMsgId);
+    d.setUint32(14, t.unixTime);
+    d.setUint16(18, _crc(b));
+    return b;
+  }
+
+  static TramaAcuse _decodificarAcuse(Uint8List b) {
+    final d = ByteData.sublistView(b);
+    return TramaAcuse(
+      msgId: d.getUint32(0),
+      senderId: d.getUint32(4),
+      ttl: d.getUint8(_offsetTtl),
+      tipo: d.getUint8(_offsetType),
+      refMsgId: d.getUint32(10),
+      unixTime: d.getUint32(14),
     );
   }
 

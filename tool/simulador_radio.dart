@@ -181,6 +181,20 @@ Map<String, Object?> _describir(Uint8List bytes) {
       'unixTime': t.unixTime,
       'texto': t.texto,
     },
+    TramaAcuse t => {
+      ...base,
+      'trama': 'Acuse',
+      'acuse': switch (t.tipo) {
+        TipoTrama.ackEnCamino => 'en camino',
+        TipoTrama.ackLlegue => 'llegué',
+        _ => 'resuelto',
+      },
+      'msgId': t.msgId,
+      'senderId': t.senderId,
+      'ttl': t.ttl,
+      'refMsgId': t.refMsgId,
+      'unixTime': t.unixTime,
+    },
     TramaSafetyCheck t => {
       ...base,
       'trama': 'SafetyCheck',

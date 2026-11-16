@@ -32,7 +32,7 @@ const urlSimulador = String.fromEnvironment('SIMULADOR');
 /// sin hardware). Sin él, en Android e iOS se usa el módem real por BLE.
 const modoModem = String.fromEnvironment('MODEM');
 
-/// Elige la implementación del servicio de conexión (SDS, DD-08).
+/// Elige la implementación del servicio de conexión (SDS 5.2).
 ModemService crearModem(SharedPreferences prefs) {
   if (urlSimulador.isNotEmpty) return ModemPuente(Uri.parse(urlSimulador));
   final hayBle =

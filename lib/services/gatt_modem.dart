@@ -1,5 +1,5 @@
 /// Contrato GATT con el firmware del T-Beam en modo módem
-/// (FirmwareTBeam/src/enlace_ble.cpp; SRS 3.1.2; SDS 8.7).
+/// (FirmwareTBeam/src/enlace_ble.cpp; SRS 3.1.2; SDS 7.7).
 ///
 /// Código puro de Dart, sin dependencias de BLE, para probarlo sin hardware.
 library;

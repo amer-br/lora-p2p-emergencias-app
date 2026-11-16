@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'gatt_modem.dart';
 import 'modem_service.dart';
 
-/// Servicio de conexión (SDS, DD-08) con el módem LilyGO T-Beam por BLE.
+/// Servicio de conexión (SDS 5.2) con el módem LilyGO T-Beam por BLE.
 ///
 /// Busca un módem que anuncie el servicio de [UuidModem]: prefiere el último
 /// al que se conectó este teléfono y, si no lo encuentra, toma el primero que

@@ -27,7 +27,7 @@ class IncidenteEntity {
   EstadoEnvio? estadoEnvio;
 }
 
-/// Acuses propios y recibidos (SDS 9.1). Se relacionan con su incidente por
+/// Acuses propios y recibidos (SDS 8.1). Se relacionan con su incidente por
 /// refMsgId y no por un enlace obligatorio, para poder guardar un acuse que
 /// llega antes que su incidente (RNF-2.6).
 @collection

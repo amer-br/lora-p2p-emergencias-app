@@ -3,7 +3,7 @@
 /// El estado de atención no viaja por radio: cada nodo lo calcula a partir
 /// del conjunto de acuses que conoce, sin importar su orden ni sus
 /// duplicados, así que dos nodos con los mismos acuses siempre concuerdan
-/// (RNF-2.2; SDS DD-05). Son las mismas reglas que aplica el panel
+/// (RNF-2.2; SDS 7.6). Son las mismas reglas que aplica el panel
 /// (PanelCampus/emergencias/servicios.py).
 library;
 
@@ -16,7 +16,7 @@ enum TipoAcuse {
 
   const TipoAcuse(this.tipo, this.etiqueta);
 
-  /// Valor del campo Type de la trama (SDS 8.5).
+  /// Valor del campo Type de la trama (SDS 7.5).
   final int tipo;
   final String etiqueta;
 

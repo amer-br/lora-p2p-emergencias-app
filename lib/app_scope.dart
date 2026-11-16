@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,6 +11,7 @@ import 'data/almacen.dart';
 import 'data/repositorios.dart';
 import 'domain/categoria.dart';
 import 'protocol/tramas.dart';
+import 'services/modem_ble.dart';
 import 'services/modem_service.dart';
 import 'services/ubicacion_service.dart';
 
@@ -21,10 +23,25 @@ const limitesCampus = (
   este: -102.63754,
 );
 
-/// URL del simulador de radio (`tool/simulador_radio.dart`). Si se define
-/// con `--dart-define=SIMULADOR=ws://localhost:8080/ws` la app usa
-/// [ModemPuente]; si no, el [ModemSimulado] local.
+/// URL del simulador de radio (`tool/simulador_radio.dart`) o de un puente de
+/// radio. Si se define con `--dart-define=SIMULADOR=ws://localhost:8080/ws`,
+/// la app usa [ModemPuente].
 const urlSimulador = String.fromEnvironment('SIMULADOR');
+
+/// `--dart-define=MODEM=simulado` fuerza el [ModemSimulado] local (demostración
+/// sin hardware). Sin él, en Android e iOS se usa el módem real por BLE.
+const modoModem = String.fromEnvironment('MODEM');
+
+/// Elige la implementación del servicio de conexión (SDS, DD-08).
+ModemService crearModem(SharedPreferences prefs) {
+  if (urlSimulador.isNotEmpty) return ModemPuente(Uri.parse(urlSimulador));
+  final hayBle =
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
+  if (modoModem == 'simulado' || !hayBle) return ModemSimulado();
+  return ModemBle(prefs);
+}
 
 /// Centro del campus, usado para centrar el mapa y cuando no hay GPS.
 final centroCampus = (
@@ -77,10 +94,7 @@ class Dependencias {
       errorRecursos = true;
     }
 
-    final ModemService modem =
-        urlSimulador.isEmpty
-            ? ModemSimulado()
-            : ModemPuente(Uri.parse(urlSimulador));
+    final modem = crearModem(prefs);
     final ubicacion = UbicacionService();
     final deps = Dependencias._(
       senderId: senderId,

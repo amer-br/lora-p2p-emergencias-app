@@ -4,6 +4,8 @@
 <dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Tu ubicación se adjunta a las alertas y SOS para que otras personas puedan encontrarte.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>La app se conecta por Bluetooth a tu módem LoRa para enviar y recibir alertas sin internet.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

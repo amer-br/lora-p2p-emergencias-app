@@ -77,6 +77,12 @@ void main() {
     });
   });
 
+  test('una alerta del panel se reconoce como aviso del puesto de mando', () {
+    expect(senderIdPanel, panel);
+    expect(incidente(sender: panel).esAviso, isTrue);
+    expect(incidente().esAviso, isFalse);
+  });
+
   group('Consolidación del estado (RNF-2.2)', () {
     test('sin acuses: Emitido', () {
       expect(consolidarAtencion(const []).estado, EstadoAtencion.emitido);

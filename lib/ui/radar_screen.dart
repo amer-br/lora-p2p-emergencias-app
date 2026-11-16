@@ -176,7 +176,9 @@ class _RadarScreenState extends State<RadarScreen> {
     }
     mostrarMensaje(
       context,
-      'Nuevo incidente: ${i.categoria?.nombre ?? 'Alerta'}',
+      i.esAviso
+          ? 'Aviso del puesto de mando: ${i.categoria?.nombre ?? 'Alerta'}'
+          : 'Nuevo incidente: ${i.categoria?.nombre ?? 'Alerta'}',
     );
   }
 
@@ -649,6 +651,7 @@ class _RadarScreenState extends State<RadarScreen> {
 
   String _tituloIncidente(Incidente i) {
     final nombre = i.categoria?.nombre ?? 'Alerta';
+    if (i.esAviso) return 'Aviso del puesto de mando · $nombre';
     return i.origen == Origen.propio ? '$nombre (tu alerta)' : nombre;
   }
 

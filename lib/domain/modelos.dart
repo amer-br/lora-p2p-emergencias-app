@@ -1,5 +1,13 @@
 import 'categoria.dart';
 
+/// Sender_ID fijo del panel de coordinación (SRS, supuesto S9). Debe
+/// coincidir con `PANEL_SENDER_ID` del panel; se cambia con
+/// `--dart-define=PANEL_SENDER_ID=0000CA0A` (hexadecimal).
+final int senderIdPanel = int.parse(
+  const String.fromEnvironment('PANEL_SENDER_ID', defaultValue: '0000CA0A'),
+  radix: 16,
+);
+
 /// Origen de un registro local (SDS, Figura 4).
 enum Origen { propio, recibido }
 
@@ -59,6 +67,9 @@ class Incidente {
   final EstadoEnvio? estadoEnvio;
 
   Categoria? get categoria => Categorias.porTipo(tipo);
+
+  /// CU-18: alerta difundida por el panel del puesto de mando.
+  bool get esAviso => senderId == senderIdPanel;
   bool get esSos => tipo == tipoSos;
   bool get tieneUbicacion => lat != null && lon != null;
   Prioridad get prioridad => categoria?.prioridad ?? Prioridad.verde;

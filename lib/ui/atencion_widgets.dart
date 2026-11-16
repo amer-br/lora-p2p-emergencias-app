@@ -264,7 +264,7 @@ class _Historial extends StatelessWidget {
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    '${a.senderId == yo ? 'Tú' : 'Nodo ${hex8(a.senderId)}'}: '
+                    '${_quien(a.senderId, yo)}: '
                     '${a.tipo.etiqueta.toLowerCase()} · '
                     '${formatearAntiguedad(a.horaRecepcionLocal)}'
                     '${a.estadoEnvio == EstadoEnvio.pendiente ? ' (pendiente)' : ''}',
@@ -285,6 +285,12 @@ class _Historial extends StatelessWidget {
       ],
     );
   }
+}
+
+String _quien(int senderId, int yo) {
+  if (senderId == yo) return 'Tú';
+  if (senderId == senderIdPanel) return 'Puesto de mando';
+  return 'Nodo ${hex8(senderId)}';
 }
 
 /// Sender_ID en 8 dígitos hexadecimales, como lo muestra el panel.

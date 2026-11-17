@@ -1,6 +1,6 @@
 # Aplicación móvil — Sistema LoRa P2P de comunicación ante emergencias (MVP)
 
-MVP de la app Flutter descrita en la SRS v1 y el SDS. Cubre los casos de uso:
+MVP de la app Flutter descrita en la SRS y el SDS. Cubre los casos de uso:
 
 | CU | Funcionalidad | Pantalla |
 |----|---------------|----------|
